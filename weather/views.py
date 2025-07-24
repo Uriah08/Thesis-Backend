@@ -52,7 +52,8 @@ class WeatherForeCastView(APIView):
             for item in forecast_list[1:]:
                 item_utc = datetime.strptime(item["dt_txt"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=utc_tz)
                 item_ph = item_utc.astimezone(ph_tz)
-                if item_ph <= cutoff_dt:
+
+                if item_ph <= cutoff_dt and 7 <= item_ph.hour <= 17:
                     future_forecast.append({
                         "datetime": item_ph.strftime("%Y-%m-%d %H:%M:%S"),
                         "temperature": item["main"]["temp"],
