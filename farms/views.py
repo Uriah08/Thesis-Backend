@@ -51,5 +51,4 @@ class ListUserFarmsView(APIView):
     def get(self, request):
         farms = FarmModel.objects.filter(members=request.user)
         serializer = FarmSerializer(farms, many=True)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
