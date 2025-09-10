@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-from decouple import config
+from decouple import config # type: ignore
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +24,10 @@ INSTALLED_APPS = [
     'users',
     'farms',
     'weather',
+    'notifications',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
