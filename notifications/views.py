@@ -3,8 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import DeviceToken
 from .serializers import DeviceTokenSerializer
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterTokenView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = DeviceTokenSerializer(data=request.data)
 

@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+from notifications.models import DeviceToken
 
 class RegisterView(APIView):
     def post(self, request):
@@ -82,6 +83,17 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        token_value = request.data.get("token")
+        if not token_value:
+            return Response(
+                {"error": "Expo push token is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        DeviceToken.objects.filter(
+            user=request.user, token=token_value
+        ).delete()
+            
         try:
             request.user.auth_token.delete()
             return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
