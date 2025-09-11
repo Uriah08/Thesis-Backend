@@ -11,8 +11,6 @@ class DeviceTokenSerializer(serializers.ModelSerializer):
         fields = ["token"]
 
 class NotificationSerializer(serializers.ModelSerializer):
-    recipients = serializers.StringRelatedField(many=True, read_only=True)
-    
     class Meta:
         model = Notification
         fields = [
@@ -23,7 +21,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             "data",
             "created_at",
             "updated_at",
-            "recipients",
         ]
 
 class RecipientSerializer(serializers.ModelSerializer):

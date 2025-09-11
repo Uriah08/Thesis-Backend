@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
     path("register-token/", views.RegisterTokenView.as_view(), name="register-token"),
     path("create-notification/", views.NotificationCreateView.as_view(), name="create-notification"),
+    path("my-notifications/", views.MyNotificationsView.as_view(), name="my-notifications"),
 ]

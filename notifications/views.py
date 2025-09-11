@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import DeviceToken, Recipient
-from .serializers import DeviceTokenSerializer, NotificationSerializer
+from .serializers import DeviceTokenSerializer, NotificationSerializer, RecipientSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
@@ -56,3 +56,13 @@ class NotificationCreateView(APIView):
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MyNotificationsView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recipients = Recipient.objects.filter(user=user).select_related("notification").order_by("-created_at")
+        serializer = RecipientSerializer(recipients, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
