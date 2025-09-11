@@ -20,18 +20,23 @@ class DeviceToken(models.Model):
         return f"{self.user.username if self.user else 'NoUser'} - {self.token}"
     
 class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('announcement', 'Announcement'),
+        ('reminder', 'Reminder'),
+        ('weather', 'Weather'),
+        ('people', 'People'),
+    ]
     title = models.CharField(max_length=255)
-    type = models.CharField(max_length=100) 
+    type = models.CharField(max_length=100, choices=NOTIFICATION_TYPES) 
     body = models.TextField()
     data = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.type}: {self.title}"
     
-class NotificationRecipient(models.Model):
+    def __str__(self):
+        return f"{self.title} ({self.type})"
+
+class Recipient(models.Model):
     notification = models.ForeignKey(
         Notification,
         on_delete=models.CASCADE,
@@ -44,6 +49,7 @@ class NotificationRecipient(models.Model):
     )
     read = models.BooleanField(default=False)
     read_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("notification", "user")
@@ -52,8 +58,7 @@ class NotificationRecipient(models.Model):
         if not self.read:
             self.read = True
             self.read_at = now()
-            self.save(update_fields=["read", "read_at"])
+            self.save()
 
     def __str__(self):
-        status = "Read" if self.read else "Unread"
-        return f"{self.user.username} - {self.notification.title} ({status})"
+        return f"{self.user.username} - {self.notification.title} - {'Read' if self.read else 'Unread'}"
