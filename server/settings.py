@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'farms',
     'weather',
     'notifications',
+    
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders'
@@ -32,7 +33,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ⚠️ Required for static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

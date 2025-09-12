@@ -22,7 +22,7 @@ class DeviceToken(models.Model):
 class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ('announcement', 'Announcement'),
-        ('reminder', 'Reminder'),
+        ('check', 'Check'),
         ('weather', 'Weather'),
         ('people', 'People'),
     ]
