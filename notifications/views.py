@@ -105,3 +105,21 @@ class ReadNotificationView(APIView):
             {"detail": f"{updated_count} notifications marked as read."},
             status=status.HTTP_200_OK
         )
+class DeleteNotificationsView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request):
+        ids = request.data.get("ids", list)
+        if not isinstance(ids, list) or not ids:
+            return Response({"details": "Invalid or Missing IDS"}, status=status.HTTP_400_BAD_REQUEST)
+
+        deleted_notifications = Recipient.objects.filter(
+            id__in = ids,
+            user = request.user,
+        ).delete()
+        
+        return Response(
+            {"detail": f"{deleted_notifications} notifications deleted successfully."},
+            status=status.HTTP_200_OK
+        )
