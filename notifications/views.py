@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import DeviceToken, Recipient
-from .serializers import DeviceTokenSerializer, NotificationSerializer
+from .serializers import DeviceTokenSerializer, NotificationSerializer, RecipientSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
@@ -56,3 +56,52 @@ class NotificationCreateView(APIView):
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MyNotificationsView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recipients = Recipient.objects.filter(user=user).select_related("notification").order_by("-created_at")
+        serializer = RecipientSerializer(recipients, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class MyNotificationView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        notif_id = request.query_params.get("id")
+        
+        if not notif_id:
+            return Response({"detail": "Notification ID is required!"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            notification  = Recipient.objects.get(id=notif_id, user=request.user)
+        except Recipient.DoesNotExist:
+            return Response({"detail": "Notification not found."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = RecipientSerializer(notification)
+        return Response(serializer.data, status.HTTP_200_OK)
+        
+        
+
+class ReadNotificationView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        ids = request.data.get("ids", [])
+        if not isinstance(ids, list) or not ids:
+            return Response({"details": "Invalid or Missing IDS"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        updated_count = Recipient.objects.filter(
+            id__in = ids,
+            user = request.user,
+            read = False
+        ).update(read=True)
+        
+        return Response(
+            {"detail": f"{updated_count} notifications marked as read."},
+            status=status.HTTP_200_OK
+        )
