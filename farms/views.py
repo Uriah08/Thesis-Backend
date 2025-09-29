@@ -52,3 +52,16 @@ class ListUserFarmsView(APIView):
         farms = FarmModel.objects.filter(members=request.user)
         serializer = FarmSerializer(farms, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetFarmView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, id):
+        try:
+            farm = FarmModel.objects.get(id=id)
+        except FarmModel.DoesNotExist:
+            return Response({"detail": "Farm not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = FarmSerializer(farm)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -105,6 +105,7 @@ class ReadNotificationView(APIView):
             {"detail": f"{updated_count} notifications marked as read."},
             status=status.HTTP_200_OK
         )
+        
 class DeleteNotificationsView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
