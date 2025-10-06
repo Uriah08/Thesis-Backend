@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
     'users',
     'farms',
+    'farm_sessions',
     'weather',
     'notifications',
     
