@@ -6,6 +6,7 @@ User = get_user_model()
 
 class FarmSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
+    owner_name = serializers.ReadOnlyField(source='owner.username')
     members = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=User.objects.all(),
@@ -22,6 +23,7 @@ class FarmSerializer(serializers.ModelSerializer):
             'image_url',
             'password',
             'owner',
+            'owner_name',
             'members',
         ]
     
