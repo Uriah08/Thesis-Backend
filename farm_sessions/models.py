@@ -11,6 +11,7 @@ class FarmSessionModel(models.Model):
     )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    status = models.CharField(default='inactive', max_length=50)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)

@@ -11,6 +11,7 @@ class FarmSessionSerializer(serializers.ModelSerializer):
             "farm_name",
             "name",
             "description",
+            "status",
             "start_time",
             "end_time",
             "created_at",
