@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 from .models import FarmModel
-from .serializers import FarmSerializer, JoinFarmSerializer
+from .serializers import FarmSerializer, JoinFarmSerializer, MemberSerializer
 
 class CreateFarmView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -64,4 +64,21 @@ class GetFarmView(APIView):
             return Response({"detail": "Farm not found."}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = FarmSerializer(farm)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetMembersView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, id):
+        try:
+            farm = FarmModel.objects.get(id=id)
+        except FarmModel.DoesNotExist:
+            return Response(
+                {"detail": "Farm not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        members = farm.members.all()
+        serializer = MemberSerializer(members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
