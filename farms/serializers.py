@@ -39,3 +39,7 @@ class JoinFarmSerializer(serializers.Serializer):
     farm_id = serializers.IntegerField()
     password = serializers.CharField()    
     
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'profile_picture']
