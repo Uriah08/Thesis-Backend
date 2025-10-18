@@ -47,3 +47,6 @@ coverage.xml
 # Test outputs
 test-results/
 junitxml.xml
+
+# model
+models

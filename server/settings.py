@@ -12,6 +12,9 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,6 +29,7 @@ INSTALLED_APPS = [
     'farm_sessions',
     'weather',
     'notifications',
+    'scan',
     
     'rest_framework',
     'rest_framework.authtoken',
