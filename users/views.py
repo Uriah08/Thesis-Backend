@@ -41,7 +41,8 @@ class LoginView(APIView):
                 "birthday": user.birthday,
                 "address": user.address,
                 "is_complete": user.is_complete,
-                "profile_picture": user.profile_picture
+                "profile_picture": user.profile_picture,
+                "mobile_number": user.mobile_number
             }, status=status.HTTP_200_OK)
         else:
             return Response({

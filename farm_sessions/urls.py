@@ -4,4 +4,6 @@ from . import views
 urlpatterns = [
     path('create/', views.CreateFarmSessionView.as_view(), name="create-farm-session"),
     path('get/<int:farm_id>/', views.GetFarmSessionsView.as_view(), name="get-farm-sessions"),
+    path('get/id/<int:id>/', views.GetSessionByIdView.as_view(), name="get-session-by-id"),
+    path('status/<int:id>/', views.ActivateFarmSessionView.as_view(), name="activate-farm-session"),
 ]
