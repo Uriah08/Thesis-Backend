@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from django.utils import timezone
 
 from .models import FarmSessionModel
 from .serializers import FarmSessionSerializer
@@ -33,3 +34,40 @@ class GetFarmSessionsView(APIView):
         
         serializer = FarmSessionSerializer(sessions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetSessionByIdView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, id):
+        try:
+            session = FarmSessionModel.objects.get(id=id)
+            serializer = FarmSessionSerializer(session)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except FarmSessionModel.DoesNotExist:
+            return Response({"detail": "Session not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class ActivateFarmSessionView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, id):
+        try:
+            if not id:
+                return Response({"detail": "No Session ID provided."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            session = FarmSessionModel.objects.get(id=id)
+            if session.status == 'inactive':
+                session.status = 'active'
+                session.start_time = timezone.now()
+                session.save()
+            elif session.status == 'active':
+                session.status = 'finished'
+                session.end_time = timezone.now()
+                session.save()
+            else:
+                return Response({"detail": "Activation Failed"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return Response({"detail": "Session activated successfully."}, status=status.HTTP_200_OK)
+        except FarmSessionModel.DoesNotExist:
+            return Response({"detail": "No sessions available to activate."}, status=status.HTTP_404_NOT_FOUND)

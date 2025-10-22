@@ -29,9 +29,6 @@ class RegisterTokenView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class NotificationCreateView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
     def post(self, request):
         serializer = NotificationSerializer(data=request.data)
         if serializer.is_valid():
