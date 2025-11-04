@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/farms/', include('farms.urls')),
     path('api/sessions/', include('farm_sessions.urls')),
     path('api/notifications/', include('notifications.urls')),
-    path('api/scan/', include('scan.urls'))
+    path('api/scan/', include('scan.urls')),
+    path('api/trays/', include('trays.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
