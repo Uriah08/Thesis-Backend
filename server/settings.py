@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'users',
     'farms',
     'farm_sessions',
+    'farm_trays',
     'weather',
     'notifications',
     'scan',

@@ -2,34 +2,39 @@ from django.db import models
 from farms.models import FarmModel
 from farm_sessions.models import FarmSessionModel
 from django.conf import settings
+from farm_trays.models import FarmTrayModel
 
 # Create your models here.
-class TrayModel(models.Model):
+class SessionTrayModel(models.Model):
     farm = models.ForeignKey(
         FarmModel,
         on_delete=models.CASCADE,
-        related_name='trays'
+        related_name='session_trays'
     )
     session = models.ForeignKey(
         FarmSessionModel,
         on_delete=models.CASCADE,
-        related_name='trays',
+        related_name='session_trays'
+    )
+    tray = models.ForeignKey(
+        FarmTrayModel,
+        on_delete=models.CASCADE,
+        related_name='session_trays'
     )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='owned_trays',
+        related_name='created_session_trays',
         on_delete=models.CASCADE
     )
-    name = models.CharField(max_length=40)
     created_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(blank=True, null=True)
-    
+
     def __str__(self):
-        return self.name
+        return f"Session {self.session.name} - Tray {self.tray.name}"
     
 class TrayStepModel(models.Model):
     tray = models.ForeignKey(
-        TrayModel,
+        SessionTrayModel,
         on_delete=models.CASCADE,
         related_name='steps'
     )
