@@ -6,4 +6,6 @@ urlpatterns = [
     path('get/<int:farm_id>/', views.GetFarmSessionsView.as_view(), name="get-farm-sessions"),
     path('get/id/<int:id>/', views.GetSessionByIdView.as_view(), name="get-session-by-id"),
     path('status/<int:id>/', views.ActivateFarmSessionView.as_view(), name="activate-farm-session"),
+    path('rename/<int:session_id>/', views.RenameSessionView.as_view(), name="rename-session"),
+    path('delete/<int:session_id>/', views.DeleteSessionView.as_view(), name="delete-session"),
 ]
