@@ -181,3 +181,12 @@ class DeleteTrayView(APIView):
             {"message": "Tray deleted successfully."},
             status=status.HTTP_200_OK
         )
+        
+class GetTrayHistoryView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, tray_id):
+        trays = SessionTrayModel.objects.filter(tray__id=tray_id)
+        serializer = SessionTraySerializer(trays, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
