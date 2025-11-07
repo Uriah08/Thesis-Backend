@@ -30,4 +30,15 @@ class GetFarmTraysView(APIView):
         serializer = FarmTraySerializer(trays, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class GetFarmTrayByIdView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, tray_id):
+        try:
+            tray = FarmTrayModel.objects.get(id=tray_id)
+            serializer = FarmTraySerializer(tray)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except FarmTrayModel.DoesNotExist:
+            return Response({"detail": "Tray not found."}, status=status.HTTP_404_NOT_FOUND)
     

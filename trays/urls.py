@@ -9,4 +9,5 @@ urlpatterns = [
     path("progress/get/<int:tray_id>/", views.GetTrayProgressView.as_view(), name="get_tray_progress"),
     path("harvest/<int:tray_id>/", views.HarvestTrayView.as_view(), name="harvest-tray"),
     path('delete/<int:tray_id>/', views.DeleteTrayView.as_view(), name='delete_tray'),
+    path('get/history/<int:tray_id>/', views.GetTrayHistoryView.as_view(), name='get_tray_history')
 ]
