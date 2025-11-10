@@ -42,3 +42,56 @@ class GetFarmTrayByIdView(APIView):
         except FarmTrayModel.DoesNotExist:
             return Response({"detail": "Tray not found."}, status=status.HTTP_404_NOT_FOUND)
     
+class TrayMaintenanceView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request, tray_id):
+        try:
+            tray = FarmTrayModel.objects.get(id=tray_id)
+        except FarmTrayModel.DoesNotExist:
+            return Response({"detail": "Tray not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if tray.status == 'active':
+            return Response({"detail": "Tray must be inactive."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if tray.status == 'maintenance':
+            tray.status = 'inactive'
+        else:
+            tray.status = 'maintenance'
+        
+        tray.save()
+        
+        serializer = FarmTraySerializer(tray)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class DeleteTrayView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, tray_id):
+        try:
+            tray = FarmTrayModel.objects.get(id=tray_id)
+        except FarmTrayModel.DoesNotExist:
+            return Response({"detail": "Tray not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        tray.delete()
+        
+        return Response({"detail": "Tray deleted successfully."}, status=status.HTTP_200_OK)
+
+class RenameTrayView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request, tray_id):
+        try:
+            tray = FarmTrayModel.objects.get(id=tray_id)
+        except FarmTrayModel.DoesNotExist:
+            return Response({"detail": "Tray not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        tray.name = request.data.get('name', tray.name)
+        tray.save()
+        
+        serializer = FarmTraySerializer(tray)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
