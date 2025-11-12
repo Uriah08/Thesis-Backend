@@ -41,5 +41,5 @@ class TrayStepSerializer(serializers.ModelSerializer):
     created_by_profile_picture = serializers.CharField(source='created_by.profile_picture', read_only=True)
     class Meta:
         model = TrayStepModel
-        fields = ['id', 'tray', 'title', 'description', 'image', 'datetime', 'created_by', 'created_by_username', 'created_by_profile_picture']
+        fields = ['id', 'tray', 'title', 'description', 'image', 'rejects', 'detected', 'datetime', 'created_by', 'created_by_username', 'created_by_profile_picture']
         read_only_fields = ['id', 'datetime', 'created_by',]

@@ -83,3 +83,75 @@ class GetMembersView(APIView):
         members = farm.members.all()
         serializer = MemberSerializer(members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class EditFarmView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        farm_id = request.data.get("id")
+
+        if not farm_id:
+            return Response(
+                {"detail": "Farm ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            farm = FarmModel.objects.get(id=farm_id)
+        except FarmModel.DoesNotExist:
+            return Response(
+                {"detail": "Farm not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if farm.owner != request.user:
+            return Response(
+                {"detail": "You do not have permission to edit this farm."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = FarmSerializer(farm, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"detail": "Farm updated successfully.", "farm": serializer.data},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class FarmChangePassword(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request):
+        farm_id = request.data.get("id")
+        
+        if not farm_id:
+            return Response({"detail": "Farm ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            farm = FarmModel.objects.get(id=farm_id)
+        except FarmModel.DoesNotExist:
+            return Response({"detail": "Farm not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if farm.owner != request.user:
+            return Response({"detail": "You do not have permission to edit this farm."}, status=status.HTTP_403_FORBIDDEN)
+        
+        new_password = request.data.get("new_password")
+        old_password = request.data.get("old_password")
+        confirm_password = request.data.get("confirm_password")
+        
+        if not new_password or not old_password or not confirm_password:
+            return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if new_password != confirm_password:
+            return Response({"detail": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if farm.password != old_password:
+            return Response({"detail": "Incorrect old password."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        farm.password = new_password
+        farm.save()
+        
+        return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)

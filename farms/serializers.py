@@ -4,6 +4,14 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+# class AnnouncementSerializer(serializers.ModelSerializer):
+#     farm = serializers.PrimaryKeyRelatedField(read_only=True)
+#     created_by_name = serializers.ReadOnlyField(source='created_by.username')
+
+#     class Meta:
+#         model = AnnouncementModel
+#         fields = ['id', 'farm', 'title', 'content', 'created_at', 'updated_at', 'created_by_name']
+
 class FarmSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
     owner_name = serializers.ReadOnlyField(source='owner.username')
