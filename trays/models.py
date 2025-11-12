@@ -47,6 +47,8 @@ class TrayStepModel(models.Model):
     description = models.TextField(blank=True, null=True)
     image = models.TextField(blank=True, null=True)
     datetime = models.DateTimeField(auto_now_add=True)
+    rejects = models.IntegerField(blank=True, null=True)
+    detected = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ['datetime']

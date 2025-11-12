@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'notifications',
     'scan',
     'trays',
+    'announcements',
     
     'rest_framework',
     'rest_framework.authtoken',
