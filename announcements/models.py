@@ -18,7 +18,7 @@ class AnnouncementModel(models.Model):
         related_name='created_announcements'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} ({self.farm.name})"
