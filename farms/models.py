@@ -21,6 +21,12 @@ class FarmModel(models.Model):
         blank=True
     )
     
+    blocked = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='blocked_farms',
+        blank=True
+    )
+    
     def __str__(self):
         return self.name
     
