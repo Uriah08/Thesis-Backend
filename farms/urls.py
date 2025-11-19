@@ -14,4 +14,5 @@ urlpatterns = [
     path("unblock-user/", views.UnblockUserView.as_view(), name="unblock-user"),
     path("leave/<int:id>/", views.LeaveFarmView.as_view(), name="leave-farm"),
     path("delete/<int:id>/", views.DeleteFarmView.as_view(), name="delete-farm"),
+    path("dashboard/<int:farm_id>/", views.GetFarmDashboardView.as_view(), name="farm-dashboard"),
 ]

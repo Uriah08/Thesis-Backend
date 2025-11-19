@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .serializers import FarmTraySerializer
+from .serializers import FarmTraySerializer, TrayDashboardSerializer
+from django.shortcuts import get_object_or_404
 
 from .models import FarmTrayModel
 
@@ -94,4 +95,13 @@ class RenameTrayView(APIView):
         
         serializer = FarmTraySerializer(tray)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class GetTrayDashboardView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, tray_id):
+        farm = get_object_or_404(FarmTrayModel, id=tray_id)
+        serializer = TrayDashboardSerializer(farm)
+        return Response(serializer.data)
     
