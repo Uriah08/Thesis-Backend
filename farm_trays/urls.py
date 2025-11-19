@@ -8,4 +8,5 @@ urlpatterns = [
     path('maintenance/<int:tray_id>/', views.TrayMaintenanceView.as_view(), name="tray-maintenance"),
     path('rename/<int:tray_id>/', views.RenameTrayView.as_view(), name="rename-tray"),
     path('delete/<int:tray_id>/', views.DeleteTrayView.as_view(), name="delete-tray"),
+    path('dashboard/<int:tray_id>/', views.GetTrayDashboardView.as_view(), name="tray-dashboard")
 ]

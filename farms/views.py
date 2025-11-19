@@ -4,9 +4,11 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .models import FarmModel
-from .serializers import FarmSerializer, JoinFarmSerializer, MemberSerializer
+from .serializers import FarmSerializer, JoinFarmSerializer, MemberSerializer, FarmDashboardSerializer
 
 User = get_user_model()
 
@@ -290,3 +292,14 @@ class DeleteFarmView(APIView):
         
         farm.delete()
         return Response({"detail": "Farm deleted successfully."}, status=status.HTTP_200_OK)
+    
+class GetFarmDashboardView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, farm_id):
+        farm = get_object_or_404(FarmModel, id=farm_id)
+        serializer = FarmDashboardSerializer(farm)
+        return Response(serializer.data)
+
+    
