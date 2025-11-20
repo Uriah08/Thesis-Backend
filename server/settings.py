@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'scan',
     'trays',
     'announcements',
+    'core.apps.CoreConfig',
     
     'rest_framework',
     'rest_framework.authtoken',
