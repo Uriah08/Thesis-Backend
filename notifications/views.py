@@ -6,7 +6,7 @@ from .serializers import DeviceTokenSerializer, NotificationSerializer, Recipien
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
-from .helper import send_push_notification
+from core.expo import send_push_notification
 
 User = get_user_model()
 
