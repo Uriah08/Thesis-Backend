@@ -2,8 +2,7 @@ from rest_framework import serializers
 from .models import SessionTrayModel, TrayStepModel
 
 class SessionTraySerializer(serializers.ModelSerializer):
-    farm_name = serializers.CharField(source='farm.name', read_only=True)
-    session_name = serializers.CharField(source='session.name', read_only=True)
+    farm_name = serializers.CharField(source='tray.farm.name', read_only=True)
     tray_name = serializers.CharField(source='tray.name', read_only=True)
     created_by_username = serializers.CharField(source='created_by.username', read_only=True)
     created_by_profile_picture = serializers.CharField(source='created_by.profile_picture', read_only=True)
@@ -12,12 +11,9 @@ class SessionTraySerializer(serializers.ModelSerializer):
         model = SessionTrayModel
         fields = [
             'id',
-            'farm',
-            'farm_name',
-            'session',
-            'session_name',
-            'tray',
+            'tray',                 # tray FK
             'tray_name',
+            'farm_name',            # computed from tray.farm
             'created_at',
             'finished_at',
             'created_by',
@@ -30,7 +26,6 @@ class SessionTraySerializer(serializers.ModelSerializer):
             'created_at',
             'finished_at',
             'farm_name',
-            'session_name',
             'tray_name',
             'created_by_username',
             'created_by_profile_picture',
