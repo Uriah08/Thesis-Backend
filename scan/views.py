@@ -128,6 +128,7 @@ class ScanView(APIView):
 
         # ✅ Run detection
         output, detections = self.detect_and_classify(temp_path)
+        print(detections)
 
         # ✅ Make sure predictions directory exists
         os.makedirs("media/predictions", exist_ok=True)
@@ -166,7 +167,7 @@ class ScanView(APIView):
 #     yolo_model = YOLO("models/yolo/yolov8-1.pt")
 
 #     # Load CNN model with checkpoint format
-#     checkpoint = torch.load("models/cnn/resnet18-1.pth", map_location="cpu")
+#     checkpoint = torch.load("models/cnn/resnet18-2.pth", map_location="cpu")
 #     cnn_model = models.resnet18(pretrained=False)
 #     cnn_model.fc = nn.Linear(cnn_model.fc.in_features, 4)
     

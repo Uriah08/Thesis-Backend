@@ -34,7 +34,7 @@ class CreateAnnouncementView(APIView):
             members = farm.members.exclude(id=request.user.id)
             
             notification_data = {
-                "title": f"{announcement.title}",
+                "title": f"Announcement: {announcement.title}",
                 "type": "announcement",
                 "body": announcement.content,
                 "data": {
