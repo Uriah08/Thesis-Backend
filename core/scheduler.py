@@ -64,10 +64,12 @@ def send_daily_weather():
             print("No forecast for tomorrow.")
             return
 
+        # Pick entry closest to 12PM
         target_entry = min(
             tomorrow_entries,
             key=lambda x: abs(
-                datetime.strptime(x["dt_txt"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=utc)
+                datetime.strptime(x["dt_txt"], "%Y-%m-%d %H:%M:%S")
+                .replace(tzinfo=utc)
                 .astimezone(pht)
                 .hour - 12
             )
@@ -82,73 +84,65 @@ def send_daily_weather():
 
         from collections import Counter
         common_desc = Counter(descriptions).most_common(1)[0][0].title()
-        max_pop = max(pops) * 100
 
-        rain = (target_entry.get("pop", 0) * 100)
-        wind = target_entry.get("wind", {}).get("speed", 0)
+        rainPercent = target_entry.get("pop", 0) * 100
         cloud = target_entry.get("clouds", {}).get("all", 0)
 
-        def rain_desc(r):
-            if r < 10: return "no expected rain"
+        def getRainDescription(r):
+            if r == 0: return "no expected rain"
             if r < 30: return f"a slight {r:.0f}% chance of rain"
-            if r < 50: return f"a moderate {r:.0f}% chance of rain"
+            if r < 60: return f"a moderate {r:.0f}% chance of rain"
             if r < 80: return f"a high {r:.0f}% chance of rain"
             return f"a very high {r:.0f}% chance of rain"
 
-        def wind_desc(w):
-            if w < 10: return "calm winds"
-            if w < 15: return "a light breeze"
-            if w < 20: return "moderate wind"
-            return "strong gusty winds"
-
-        def cloud_desc(c):
+        def getCloudDescription(c):
             if c < 30: return "mostly clear skies"
-            if c < 50: return "partly cloudy skies"
-            if c < 70: return "noticeable cloud cover"
+            if c < 60: return "partly cloudy skies"
+            if c < 85: return "noticeable cloud cover"
             return "overcast skies"
 
-        r_desc = rain_desc(rain)
-        w_desc = wind_desc(wind)
-        c_desc = cloud_desc(cloud)
+        rainDesc = getRainDescription(rainPercent)
+        cloudDesc = getCloudDescription(cloud)
 
-        if rain < 10 and wind < 10 and cloud < 50:
+        if rainPercent == 0 and cloud < 50:
             alert = "Excellent"
-            alert_msg = (
-                f"The weather is perfect for drying fish tomorrow. Expect {c_desc}, "
-                f"{w_desc}, and {r_desc}. Ideal for quick and safe drying."
-            )
-        elif rain < 10 and wind < 15 and cloud < 100:
+            message = f"Ideal conditions for drying fish: {cloudDesc}, and {rainDesc}."
+
+        elif rainPercent == 0 and cloud <= 100:
             alert = "Good"
-            alert_msg = (
-                f"You can dry fish tomorrow with confidence. Expect {c_desc}, "
-                f"{w_desc}, and {r_desc}. Still, have backup cover just in case."
-            )
-        elif (10 <= rain < 50) or (50 <= cloud < 100) or (15 <= wind < 20):
+            message = f"Good weather for drying fish with {cloudDesc}, and {rainDesc}."
+
+        elif rainPercent <= 80 and rainPercent > 0 and cloud <= 100:
             alert = "Caution"
-            alert_msg = (
-                f"Drying fish is possible but not guaranteed tomorrow. {c_desc} and "
-                f"{w_desc} may affect drying speed. Also, there's {r_desc}. Stay alert."
+            message = (
+                f"Be cautious: {cloudDesc}, and {rainDesc}. "
+                "Drying may be slow or risky."
             )
-        elif (50 <= rain < 80) or wind >= 20 or cloud == 100:
+
+        elif rainPercent > 80 and rainPercent < 99:
             alert = "Warning"
-            alert_msg = (
-                f"It's not advisable to dry fish tomorrow. Expect {c_desc}, "
-                f"{w_desc}, and {r_desc}. Conditions could compromise drying."
+            message = (
+                f"Drying fish is not recommended due to {cloudDesc}, and {rainDesc}."
             )
+
         else:
             alert = "Danger"
-            alert_msg = (
-                f"Avoid drying fish tomorrow due to {c_desc}, {w_desc}, and {r_desc}. "
-                "Conditions are highly unfavorable and risky."
+            message = (
+                f"Avoid drying fish. Extreme conditions: {cloudDesc}, and {rainDesc}."
             )
 
+        # ----------------------------
+        # BUILD NOTIFICATION BODY
+        # ----------------------------
+
         body = (
-            f"{common_desc}. High of {max_temp}°C, low of {min_temp}°C. "
-            f"Chance of rain up to {max_pop:.0f}%. "
-            f"\n\nFish Drying Alert: {alert}\n{alert_msg}"
+            f"{common_desc}. High of {max_temp}°C, low of {min_temp}°C.\n"
+            f"Chance of rain up to {rainPercent:.0f}%.\n\n"
+            f"Fish Drying Alert: {alert}\n{message}"
         )
 
         users = User.objects.all()
+
         notification = Notification.objects.create(
             title=f"{alert} Drying Conditions Expected Tomorrow — {city}",
             body=body,
@@ -158,9 +152,9 @@ def send_daily_weather():
                 "max_temp": max_temp,
                 "min_temp": min_temp,
                 "description": common_desc,
-                "rain_chance": max_pop,
+                "rain_chance": rainPercent,
                 "drying_alert": alert,
-                "drying_message": alert_msg,
+                "drying_message": message,
                 "forecast_day": str(tomorrow)
             }
         )
@@ -178,6 +172,7 @@ def send_daily_weather():
     except Exception as e:
         print("Weather API error:", e)
 
+
 def start_scheduler():
     scheduler = BackgroundScheduler()
     scheduler.add_job(delete_expired_announcements, 'interval', hours=1)
@@ -186,8 +181,9 @@ def start_scheduler():
     # scheduler.add_job(
     #     send_daily_weather,
     #     'cron',
-    #     hour=7,
-    #     minute=0,
+    #     hour=13,
+    #     minute=41,
     #     timezone='Asia/Manila'
     # )
+
     scheduler.start()
