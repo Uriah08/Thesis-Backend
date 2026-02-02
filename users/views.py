@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer, CompleteProfileSerializer
+from .serializers import RegisterSerializer, CompleteProfileSerializer, UpdateProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
@@ -73,7 +73,8 @@ class CompleteProfileView(APIView):
                 "birthday": user.birthday,
                 "address": user.address,
                 "is_complete": user.is_complete,
-                "profile_picture": user.profile_picture
+                "profile_picture": user.profile_picture,
+                "mobile_number": user.mobile_number
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -143,3 +144,33 @@ class ChangePasswordView(APIView):
             {"detail": "Password changed successfully."},
             status=status.HTTP_200_OK
         )
+
+class UpdateProfileView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        serializer = UpdateProfileSerializer(
+            instance=request.user,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            user = serializer.save()
+            user.is_complete = True
+            user.save()
+            print(user)
+            return Response({
+                "username": user.username,
+                "email": user.email,
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "birthday": user.birthday,
+                "address": user.address,
+                "is_complete": user.is_complete,
+                "profile_picture": user.profile_picture,
+                "mobile_number": user.mobile_number
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
