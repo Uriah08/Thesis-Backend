@@ -21,8 +21,12 @@ class ScanView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def detect_and_classify(self, image):
+        # Get models (lazy load on first call)
+        det_model = detection_model()
+        cls_model = classification_model()
+        
         original = image.copy()
-        results = detection_model(image, conf=0.25, verbose=False)
+        results = det_model(image, conf=0.25, verbose=False)
 
         detections = []
         dry_count = 0
@@ -38,7 +42,7 @@ class ScanView(APIView):
         for box in results[0].boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             confidence = float(box.conf[0])
-            class_name = detection_model.names[int(box.cls[0])]
+            class_name = det_model.names[int(box.cls[0])]
 
             if class_name.lower() == 'fish':
                 # Crop the detected fish
@@ -48,7 +52,7 @@ class ScanView(APIView):
                 
                 # YOLOv8 classification expects BGR (OpenCV format)
                 # Predict using YOLOv8 classification model
-                cls_results = classification_model(crop, verbose=False)
+                cls_results = cls_model(crop, verbose=False)
                 
                 # Get prediction results
                 probs = cls_results[0].probs
@@ -57,7 +61,7 @@ class ScanView(APIView):
                 
                 # Get class name from index
                 # Assuming class indices: 0='DRY', 1='UNDRIED' (alphabetical order)
-                predicted_class = classification_model.names[top1_idx]
+                predicted_class = cls_model.names[top1_idx]
                 
                 if predicted_class == 'UNDRIED':
                     label = 'UNDRIED'
