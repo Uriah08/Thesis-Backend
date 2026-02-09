@@ -23,7 +23,6 @@
 # print("="*50)
 
 import os
-from ultralytics import YOLO
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,6 +37,8 @@ def get_detection_model():
     """Lazy load detection model"""
     global _detection_model
     if _detection_model is None:
+        # Import here, not at top of file!
+        from ultralytics import YOLO
         print("Loading YOLO detection model...")
         _detection_model = YOLO(YOLO_DETECTION_PATH)
         print("✓ YOLO detection model loaded")
@@ -47,6 +48,8 @@ def get_classification_model():
     """Lazy load classification model"""
     global _classification_model
     if _classification_model is None:
+        # Import here, not at top of file!
+        from ultralytics import YOLO
         print("Loading YOLO classification model...")
         _classification_model = YOLO(YOLO_CLASSIFICATION_PATH)
         print("✓ YOLO classification model loaded")
