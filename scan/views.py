@@ -1,4 +1,3 @@
-# myapp/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -42,23 +41,32 @@ class ScanView(APIView):
             class_name = detection_model.names[int(box.cls[0])]
 
             if class_name.lower() == 'fish':
+                # Crop the detected fish
                 crop = original[y1:y2, x1:x2]
                 if crop.size == 0:
                     continue
-                crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-                crop_resized = cv2.resize(crop_rgb, (224, 224))
-                crop_norm = np.expand_dims(crop_resized / 255.0, axis=0)
-
-                pred = classification_model.predict(crop_norm, verbose=0)[0][0]
-
-                if pred > 0.5:
+                
+                # YOLOv8 classification expects BGR (OpenCV format)
+                # Predict using YOLOv8 classification model
+                cls_results = classification_model(crop, verbose=False)
+                
+                # Get prediction results
+                probs = cls_results[0].probs
+                top1_idx = probs.top1  # Index of top prediction
+                top1_conf = float(probs.top1conf)  # Confidence of top prediction
+                
+                # Get class name from index
+                # Assuming class indices: 0='DRY', 1='UNDRIED' (alphabetical order)
+                predicted_class = classification_model.names[top1_idx]
+                
+                if predicted_class == 'UNDRIED':
                     label = 'UNDRIED'
-                    conf_pct = float(pred * 100)
+                    conf_pct = top1_conf * 100
                     color = COLORS['UNDRIED']
                     undried_count += 1
-                else:
+                else:  # 'DRY'
                     label = 'DRY'
-                    conf_pct = float((1 - pred) * 100)
+                    conf_pct = top1_conf * 100
                     color = COLORS['DRY']
                     dry_count += 1
 
@@ -70,6 +78,7 @@ class ScanView(APIView):
             else:
                 continue
 
+            # Draw bounding box and label
             cv2.rectangle(original, (x1, y1), (x2, y2), color, 3)
             label_text = f"{label} {conf_pct:.1f}%"
             (tw, th), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
