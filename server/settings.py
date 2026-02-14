@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'scan',
     'trays',
     'announcements',
+    'sandbox',
     'core.apps.CoreConfig',
     
     'rest_framework',
