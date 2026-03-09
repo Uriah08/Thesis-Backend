@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'announcements',
     'sandbox',
     'core.apps.CoreConfig',
+    'production',
     
     'rest_framework',
     'rest_framework.authtoken',

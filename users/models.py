@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     is_complete = models.BooleanField(default=False)
     profile_picture = models.URLField(null=True, blank=True)
     mobile_number = models.CharField(max_length=15, blank=True)
+    role = models.CharField(default='user', max_length=20)
 
     def __str__(self):
         return self.username
