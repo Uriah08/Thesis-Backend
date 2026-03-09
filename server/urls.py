@@ -31,4 +31,5 @@ urlpatterns = [
     path('api/trays/', include('trays.urls')),
     path('api/tray/', include('farm_trays.urls')),
     path('api/announcements/', include('announcements.urls')),
+    path('api/production/', include('production.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
